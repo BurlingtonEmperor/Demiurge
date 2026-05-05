@@ -1,3 +1,12 @@
+/*
+Make C++ Easier!
+
+This is a library I made for another project (EatCrow2) to make C++ less complicated 
+and easier to use. Turns out it comes in real handy for a lot of other projects too.
+Even if you don't end up using Demiurge, you can at least use the libraries I've made to
+make it for your own C++ projects.
+*/
+
 #include <string>
 #include <sstream>
 #include <vector>
@@ -9,7 +18,7 @@
 
 #include "make_cpp_easier.h"
 
-void console_log(std::string& str) { // this function mimics the JavaScript console.log() function
+void console_log(std::string str) { // this function mimics the JavaScript console.log() function
   std::cout << str;
 }
 
@@ -32,16 +41,8 @@ void shiftFloatArray(float (&array_to_shift)[20], float new_value) {
   array_to_shift[0] = new_value;
 }
 
-bool checkIncludes(std::string& text, const std::string& substring) { // this function checks to see if a string contains a substring.
+bool checkIncludes(std::string text, const std::string substring) { // this function checks to see if a string contains a substring.
   return text.find(substring) != std::string::npos;
-}
-
-int convertBoolToInt(bool& bool_value) { // this function converts a boolean to an integer (for switch statements); 1 = true and 0 = false
-  if (bool_value) {
-    return 1;
-  } else {
-    return 0;
-  }
 }
 
 int findLowestInArray(float (&array_to_check)[20]) { // finds lowest value in a float array and returns its position.

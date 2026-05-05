@@ -16,7 +16,7 @@ void shiftFloatArray(float (&array_to_shift)[20], float new_value);
 
 bool checkIncludes(std::string& text, const std::string& substring);
 
-int convertBoolToInt(bool& bool_value);
+// int convertBoolToInt(bool& bool_value);
 int findLowestInArray(float (&array_to_check)[20]);
 
 float absoluteValue(float value_to_check);
