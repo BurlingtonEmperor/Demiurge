@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <ranges>
+#include <unordered_map>
 
 #include "make_cpp_easier.h"
 
