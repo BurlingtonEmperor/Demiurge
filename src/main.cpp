@@ -50,7 +50,8 @@ enum class demiurge_commands_primary {
   EXECUTE, 
   C, // <-- that's a comment indicator.
   PLAY_SOUND,
-  EDITOR_BG, // the editor commands start here.
+  RUN_FUNC,
+  EDITOR_BG, // editor commands start here.
   EDITOR_FONT,
   EDITOR_TEXT_COLOR,
   EDITOR_BGIMG,
@@ -63,7 +64,7 @@ enum class demiurge_commands_primary {
   DRAW_IMG, // canvas commands start here.
   CLEAR_CANVAS,
   WRITE_TEXT,
-  HTML_SOUND,
+  HTML_SOUND, // canvas commands end here.
   UNDEFINED
 };
 
@@ -101,12 +102,16 @@ demiurge_commands_primary stringToEnum(const std::string& str) {
     {"CLEAR", demiurge_commands_primary::CLEAR},
     {"EXECUTE", demiurge_commands_primary::EXECUTE},
     {"C", demiurge_commands_primary::C},
+    {"RUN_FUNC", demiurge_commands_primary::RUN_FUNC},
     {"PLAY_SOUND", demiurge_commands_primary::PLAY_SOUND},
     {"EDITOR_BG", demiurge_commands_primary::EDITOR_BG},
     {"EDITOR_FONT", demiurge_commands_primary::EDITOR_FONT},
     {"EDITOR_TEXT_COLOR", demiurge_commands_primary::EDITOR_TEXT_COLOR},
     {"EDITOR_CSS", demiurge_commands_primary::EDITOR_CSS},
-    {"DRAW_IMG", demiurge_commands_primary::DRAW_IMG}
+    {"DRAW_IMG", demiurge_commands_primary::DRAW_IMG},
+    {"CLEAR_CANVAS", demiurge_commands_primary::CLEAR_CANVAS},
+    {"WRITE_TEXT", demiurge_commands_primary::WRITE_TEXT},
+    {"HTML_SOUND", demiurge_commands_primary::HTML_SOUND},
   };
 
   auto it = commandMap.find(str);
