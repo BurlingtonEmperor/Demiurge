@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <ranges>
 #include <unordered_map>
+#include <numeric>
 
 #include "make_cpp_easier.h"
 #include "demiurge_math.h"
@@ -26,6 +27,7 @@ enum class variable_types {
 enum class demiurge_commands_primary {
   DISPLAY, // bytecode form: d
   ACCEPT, // >
+  FLAGX, // fx
   INT, 
   FLOAT,
   LONG,
@@ -37,12 +39,15 @@ enum class demiurge_commands_primary {
   LONG_ARR,
   BOOL_ARR,
   KEY_PROMPT, // kp
+  SET_KEY, // se
   ENCRYPT, // e
   DECRYPT, // d
   TEXT_OCR, // to
-  LLM, // large language model,
-  ILC, // iterative learning controller (sort of)
-  APM, // adaptive pattern matching
+  SET_MODEL, // sm
+  SET_API_KEY, // sak
+  LLM, // large language model, bytecode form is literally just llm!
+  ILC, // iterative learning controller (sort of), bytecode form: ilc
+  APM, // adaptive pattern matching, bytecode form: apm.
   WAIT, // w
   REPEAT, // r
   STOP, // !
@@ -76,9 +81,10 @@ enum class limited_tools {
   FIND_COMMON_IN_ARRAY
 };
 
-demiurge_commands_primary stringToEnum(const std::string& str) {
+demiurge_commands_primary commandToEnum (const std::string& str) {
   static const std::unordered_map<std::string, demiurge_commands_primary> commandMap = {
     {"DISPLAY", demiurge_commands_primary::DISPLAY},
+    {"FLAGX", demiurge_commands_primary::FLAGX},
     {"ACCEPT", demiurge_commands_primary::ACCEPT},
     {"INT", demiurge_commands_primary::INT},
     {"FLOAT", demiurge_commands_primary::FLOAT},
@@ -91,9 +97,12 @@ demiurge_commands_primary stringToEnum(const std::string& str) {
     {"LONG_ARR", demiurge_commands_primary::LONG_ARR},
     {"BOOL_ARR", demiurge_commands_primary::BOOL_ARR},
     {"KEY_PROMPT", demiurge_commands_primary::KEY_PROMPT},
+    {"SET_KEY", demiurge_commands_primary::SET_KEY},
     {"ENCRYPT", demiurge_commands_primary::ENCRYPT},
     {"DECRYPT", demiurge_commands_primary::DECRYPT},
     {"TEXT_OCR", demiurge_commands_primary::TEXT_OCR},
+    {"SET_MODEL", demiurge_commands_primary::SET_MODEL},
+    {"SET_API_KEY", demiurge_commands_primary::SET_API_KEY},
     {"LLM", demiurge_commands_primary::LLM},
     {"ILC", demiurge_commands_primary::ILC},
     {"APM", demiurge_commands_primary::APM},
@@ -118,35 +127,173 @@ demiurge_commands_primary stringToEnum(const std::string& str) {
   return (it != commandMap.end()) ? it->second : demiurge_commands_primary::UNDEFINED;
 }
 
-std::string string_to_decipher;
-
 int main (int argc, char *argv[]) {
   if (argc != 2) {
     std::cout << "Demiurge can only accept 1 file path as an argument.";
     std::cin.get();
   } else {
     const std::string demiurge_filepath = argv[1];
+
+    // std::string string_to_decipher;
+    std::vector<std::string> seglist;
+    std::vector<std::string> bytecode_vector;
     
     std::ifstream file(demiurge_filepath);
     std::string line;
 
     if (file.is_open()) {
       while (std::getline(file, line)) {
-        string_to_decipher += line;
+        seglist.push_back(line);
       }
       file.close();
 
-      replaceAll(string_to_decipher, ";\"", "<semi>\""); // make sure that statement terminators aren't just strings.
-      replaceAll(string_to_decipher, ";\'", "<semi>\'");
+      int compileMode = 0; // produces an exe (default)
 
-      std::vector<std::string> seglist = splitByString(string_to_decipher, ";");
-      std::vector<std::string> bytecode_vector;
+      int compilerError = 0; // checks for an error
+      int compilerErrorType = 0; 
+      int compilerErrorLine = 0; // what line is it on?
+      /* 
+      0 - syntax error
+      1 - undefined error
+      2 - type error
+      */
+      std::string compilerErrorMsg = "";
+
+      std::vector<std::string> variable_checking_array; // storing variables and check to see if a variable exists.
 
       for (int i = 0; i < seglist.size(); i++) {
+        if (compilerError == 1) {
+          compilerErrorLine = i;
+          break;
+        }
+
         std::string individual_line = seglist[i];
         if (individual_line.empty()) continue;
 
+        auto it = std::unique(individual_line.begin(), individual_line.end(), [](char a, char b) {
+          return (a == ' ' && b == ' ');
+        });
+        individual_line.erase(it, individual_line.end()); // remove extra whitespace
         std::vector<std::string> space_limiter = splitBySpaces(individual_line);
+
+        demiurge_commands_primary convertedCommand = commandToEnum(toUpperCase(space_limiter[0]));
+
+        std::vector<std::string> space_clone = space_limiter;
+        space_clone.erase(space_clone.begin());
+        
+        std::string space_clone_final = joinVectorItems_string(space_clone);
+
+        std::string secondary_argument = (space_limiter.size() > 1) ? space_limiter[1] : "0";
+        std::string third_argument = (space_limiter.size() > 2) ? space_limiter[2] : "0";
+
+        int only_taking_one_arg = 0; // checks to see if the command only takes one argument, default (0) means no
+
+        switch (convertedCommand) {
+          case (demiurge_commands_primary::FLAGX):
+            // yes this is kind of a bad way to do this, but I want to get this done fast
+            if (secondary_argument == "E") compileMode = 1; // produce exe
+            if (secondary_argument == "H") compileMode = 2; // produce standalone html file 
+            if (secondary_argument == "B") compileMode = 3; // produce binary file (bytecode)
+            if (secondary_argument == "T") compileMode = 4; // produce editor theme (also bytecode)
+
+            only_taking_one_arg = 1;
+            break;
+          case (demiurge_commands_primary::DISPLAY):
+            bytecode_vector.push_back("d:" + space_clone_final); 
+            break;
+          case (demiurge_commands_primary::ACCEPT):
+            bytecode_vector.push_back(">:" + space_clone_final);
+            break;
+          case (demiurge_commands_primary::INT): { // check if it's actually an int!
+            only_taking_one_arg = 2;
+            if (is_number(third_argument)) {
+              variable_checking_array.push_back("v:i:" + third_argument);
+            } else {
+              compilerError = 1;
+              compilerErrorType = 2;
+              compilerErrorMsg = "The value passed to the <int> variable is not a number";
+            }
+            break;
+          }
+          case (demiurge_commands_primary::FLOAT): {
+            only_taking_one_arg = 2;
+            if (is_number(third_argument)) {
+              variable_checking_array.push_back("v:f:" + third_argument);
+            } else {
+              compilerError = 1;
+              compilerErrorType = 2;
+              compilerErrorMsg = "The value passed to the <float> variable is not a number";
+            }
+            break;
+          }
+          case (demiurge_commands_primary::LONG): {
+            only_taking_one_arg = 2;
+            if (is_number(third_argument)) {
+              variable_checking_array.push_back("v:l:" + third_argument);
+            } else {
+              compilerError = 1;
+              compilerErrorType = 2;
+              compilerErrorMsg = "The value passed to the <long> variable is not a number";
+            }
+            break;
+          }
+          case (demiurge_commands_primary::BOOL): 
+            if (third_argument == "TRUE") bytecode_vector.push_back("_v_b" + secondary_argument + ":t");
+            if (third_argument == "FALSE") bytecode_vector.push_back("_v_b" + secondary_argument + ":f");
+
+            only_taking_one_arg = 1;
+            break;
+          case (demiurge_commands_primary::STRING):
+            variable_checking_array.push_back("v:s:" + space_clone_final);
+            break;
+          case (demiurge_commands_primary::INT_ARR):
+            
+            break;
+          case (demiurge_commands_primary::SET_KEY):
+            bytecode_vector.push_back("se:" + secondary_argument);
+            only_taking_one_arg = 1;
+            break;
+          case (demiurge_commands_primary::ENCRYPT): {
+            bytecode_vector.push_back("e:" + space_clone_final);
+            break;
+          }
+          case (demiurge_commands_primary::DECRYPT): 
+            bytecode_vector.push_back("d:" + space_clone_final);
+            break;
+          case (demiurge_commands_primary::TEXT_OCR):
+            bytecode_vector.push_back("se:" + space_clone_final);
+            break;
+          case (demiurge_commands_primary::SET_MODEL):
+            bytecode_vector.push_back("sm:" + secondary_argument);
+            only_taking_one_arg = 1;
+            break;
+          case (demiurge_commands_primary::SET_API_KEY):
+            bytecode_vector.push_back("sak:" + secondary_argument);
+            only_taking_one_arg = 1;
+            break;
+          case (demiurge_commands_primary::LLM):
+            bytecode_vector.push_back("llm:" + space_clone_final);
+            break;
+          case (demiurge_commands_primary::ILC): {
+            if (secondary_argument == "0" || third_argument == "0") {
+              compilerError = 1;
+              compilerErrorType = 0;
+
+              if (secondary_argument == "0") compilerErrorMsg = "Missing argument for data storage array length";
+              if (third_argument == "0") compilerErrorMsg = "Missing argument for desired error percentage";
+            } else {
+              
+            }
+            break;
+          }
+        }
+
+        switch (only_taking_one_arg) {
+          case 1:
+            break;
+          case 2:
+            break;
+        }
       }
     } else {
       std::cout << "Unable to open file. It may not exist." << std::endl;

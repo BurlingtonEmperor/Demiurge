@@ -4,6 +4,7 @@
     <title>Demiurge</title>
 
     <link href="index.css" rel="stylesheet" type="text/css"/>
+    <link href="blocks.css" rel="stylesheet" type="text/css"/>
   </head>
   <body>
     <div id="bg-img"></div>
@@ -11,9 +12,91 @@
 
     <div id="block-menu-toggle" class="glass">&lt;/&gt;</div>
     <div id="sliding-window" class="glass-card">
-      <p class="block-menu-header" id="sw-leader">AI Models</p>
+      <p class="block-menu-header ai-models" id="sw-leader">AI Models</p>
+      <p class="block-menu-header basic" id="b-header">Basic</p>
+      <p class="block-menu-header machine-learning" id="ml-header">Machine Learning</p>
+      <p class="block-menu-header variables" id="v-header">Variables</p>
+      <p class="block-menu-header operators" id="o-header">Operators</p>
+      <p class="block-menu-header events" id="m-header">Math</p>
+      <p class="block-menu-header control">Control</p>
+      <p class="block-menu-header canvas">Canvas</p>
+      <p class="block-menu-header editor">Editor</p>
+      <p class="block-menu-header">System</p>
+      <hr/>
+      <p class="menu-header" id="ai-section">AI Models</p>
+      <div class="block glass ai-block menu-block">ask user for API key</div>
+      <div class="block glass ai-block menu-block">send message to an LLM</div>
+      <div class="block glass ai-block menu-block">generate an image</div>
+      <div class="block glass ai-block menu-block">generate a video</div>
+      <div class="block glass ai-block menu-block">generate some code</div>
+      <div class="block glass ai-block menu-block">translate text</div>
+      <div class="block glass ai-block menu-block">text to speech</div>
+      <div class="block glass ai-block menu-block">listen for words</div>
+      <p class="menu-header" id="b-section">Basic</p>
+      <div class="block glass menu-block">display to screen</div>
+      <div class="block glass menu-block">ask user a question</div>
+      <div class="block glass menu-block">play a sound</div>
+      <div class="block glass menu-block">clear screen</div>
+      <p class="menu-header" id="ml-section">Machine Learning</p>
+      <div class="block glass ml-block menu-block">find a pattern</div>
+      <div class="block glass ml-block menu-block">make a neural network</div>
+      <div class="block glass ml-block menu-block">iterative learning</div>
+      <div class="block glass ml-block menu-block">identify text from image</div>
+      <div class="block glass ml-block menu-block">encrypt text</div>
+      <div class="block glass ml-block menu-block">decrypt text</div>
+      <p class="menu-header" id="v-section">Variables</p>
+      <div class="block glass v-block menu-block">integer</div>
+      <div class="block glass v-block menu-block">float</div>
+      <div class="block glass v-block menu-block">long</div>
+      <div class="block glass v-block menu-block">boolean</div>
+      <div class="block glass v-block menu-block">string</div>
+      <div class="block glass v-block menu-block">integer array []</div>
+      <div class="block glass v-block menu-block">float array []</div>
+      <div class="block glass v-block menu-block">long array []</div>
+      <div class="block glass v-block menu-block">boolean array []</div>
+      <div class="block glass v-block menu-block">string array []</div>
+      <div class="block glass v-block menu-block">change variable's value</div>
+      <p class="menu-header" id="o-section">Operators</p>
+      <div class="block glass o-block menu-block">_ and _</div>
+      <div class="block glass o-block menu-block">_ or _</div>
+      <div class="block glass o-block menu-block">_ is not _</div>
+      <div class="block glass o-block menu-block">_ is equal to _</div>
+      <div class="block glass o-block menu-block">_ includes _</div>
+      <div class="block glass o-block menu-block">_ does not include _</div>
+      <div class="block glass o-block menu-block">_ greater than _</div>
+      <div class="block glass o-block menu-block">_ less than _</div>
+      <p class="menu-header" id="m-section">Math</p>
+      <div class="block glass m-block menu-block">_ + _</div>
+      <div class="block glass m-block menu-block">_ - _</div>
+      <div class="block glass m-block menu-block">_ * _</div>
+      <div class="block glass m-block menu-block">_ / _</div>
+      <div class="block glass m-block menu-block">_ to the power of _</div>
+      <div class="block glass m-block menu-block">square root of _</div>
+      <div class="block glass m-block menu-block">cos()</div>
+      <div class="block glass m-block menu-block">sin()</div>
+      <div class="block glass m-block menu-block">tan()</div>
     </div>
-    <div id="blocks"></div>
+    <div id="blocks">
+      <div class="block glass">
+        When the program begins:
+      </div>
+      <div class="block glass">
+        Program settings:
+        <select>
+          <option value="default">Default</option>
+          <option value="exe">Create an EXE file</option>
+          <option value="html">Create an HTML file</option>
+          <option value="bin">Create a binary</option>
+          <option value="theme">Create an editor theme</option>
+        </select>
+      </div>
+      <div id="ghost-block" class="block glass">Place your next block here...</div>
+    </div>
+    <div id="two-extra">
+      <div id="terminal-toggle" class="glass">>_</div>
+      <div id="help-button" class="glass">?</div>
+    </div>
+    <div class="window" id="terminal"></div>
 
     <script src="index.js"></script>
   </body>

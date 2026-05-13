@@ -45,6 +45,12 @@ bool checkIncludes(std::string text, const std::string substring) { // this func
   return text.find(substring) != std::string::npos;
 }
 
+bool is_number(const std::string& s) {
+  std::istringstream iss(s);
+  double d;
+  return iss >> std::noskipws >> d && iss.eof();
+}
+
 int findLowestInArray(float (&array_to_check)[20]) { // finds lowest value in a float array and returns its position.
   float lowest_value = array_to_check[0];
   int lowest_position = 0;
@@ -93,7 +99,7 @@ std::vector<std::string> splitBySpaces(const std::string& str) { // this functio
   return words;
 }
 
-std::string joinVectorItems_string(std::vector<std::string>& str_vector) {
+std::string joinVectorItems_string(std::vector<std::string>& str_vector) { // joins by spaces
   std::string joined = "";
   for (size_t i = 0; i < str_vector.size(); ++i) {
     joined += str_vector[i];
@@ -102,6 +108,16 @@ std::string joinVectorItems_string(std::vector<std::string>& str_vector) {
     }
   }
   return joined;
+}
+
+std::string joinVectorItems_string_substring(const std::vector<std::string>& vec, const std::string& delimiter) {
+  if (vec.empty()) return "";
+    
+  std::string res = vec[0];
+  for (size_t i = 1; i < vec.size(); ++i) {
+    res += delimiter + vec[i]; 
+  }
+  return res;
 }
 
 std::string toUpperCase(std::string& str) { // this function converts a string to all uppercase and returns it.

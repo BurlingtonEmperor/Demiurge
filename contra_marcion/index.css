@@ -10,7 +10,21 @@ html, body {
 
 body {
   background-color: #566d88a1;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  /* font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; */
+  font-family: monospace;
+}
+
+select {
+  border: none;
+  border-radius: 3px;
+  outline: none;
+  font-family: monospace;
+  background-color: #bfdadd;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+}
+
+option {
+  border: none;
 }
 
 .glass {
@@ -25,14 +39,59 @@ body {
 }
 
 .block {
-  position: absolute;
+  position: relative;
   border-radius: 10px;
   user-select: none;
+  width: fit-content;
+}
+
+.block-if {
+  background-color: #ffab19;
+  color: white;
+  font-family: sans-serif;
+  font-weight: bold;
+  padding: 8px 12px;
+  margin-bottom: 40px; 
+  min-width: 120px;
+  box-shadow: 0 40px 0 -10px #ffab19;
+  position: relative;
+}
+
+.block-if::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 15px; 
+  height: 40px; 
+  background-color: #ffab19;
 }
 
 .block-menu-header {
   font-size: 2.3vw;
   margin-left: 10px;
+  background-color: #aeabab;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 3px;
+  transition: color 0.5s ease-in-out;
+  user-select: none;
+}
+
+.block-menu-header:hover {
+  cursor: pointer;
+  color: rgb(135, 225, 255);
+}
+
+.menu-header {
+  font-size: 1.9vw;
+  margin-left: 10px;
+}
+
+.menu-block {
+  margin-left: 10px;
+  color: black;
+  margin-bottom: 10px;
 }
 
 .glass-card {
@@ -41,6 +100,38 @@ body {
   background-color: rgba(255, 255, 255, 0.75);
   border-radius: 12px;
   border: 1px solid rgba(209, 213, 219, 0.3);
+}
+
+.ai-models {
+  background-color: #4bc1bd;
+}
+
+.variables {
+  background-color: #df8686;
+}
+
+.operators {
+  background-color: #4cbc8b;
+}
+
+.events {
+  background-color: #ebb661;
+}
+
+.control {
+  background-color: #ed78eb;
+}
+
+.canvas {
+  background-color: #eddd81;
+}
+
+.editor {
+  background-color: #aef068;
+}
+
+.machine-learning {
+  background-color: #3c415a;
 }
 
 #bg-img {
@@ -60,9 +151,9 @@ body {
   opacity: 1;
 }
 
-#block-menu-toggle {
+#block-menu-toggle, #terminal-toggle, #help-button {
   /* background-color: #757070; */
-  position: fixed;
+  /* position: fixed; */
   font-size: 2.5vw;
   border-radius: 10px;
   user-select: none;
@@ -75,8 +166,19 @@ body {
   transition: color 0.5s ease-in-out;
 }
 
-#block-menu-toggle:hover {
+#block-menu-toggle {
+  position: fixed;
+}
+
+#block-menu-toggle:hover, #terminal-toggle:hover, #help-button:hover {
   color: rgb(135, 225, 255);
+}
+
+#two-extra {
+  display: flex;
+  position: fixed;
+  right: 0px;
+  gap: 0px;
 }
 
 #sliding-window {
@@ -86,7 +188,7 @@ body {
   width: 250px;
   height: 100%;
   background: #e1e1f6;
-  color: rgb(46, 43, 43);
+  color: rgb(0, 0, 0);
   transform: translateX(-100%); 
   transition: transform 0.4s ease-in-out; 
   z-index: 1000;
@@ -98,4 +200,14 @@ body {
 
 #sliding-window.open {
   transform: translateX(0);
+}
+
+#blocks {
+  width: 50%;
+  height: 100%;
+  position: absolute;
+}
+
+#ghost-block {
+  opacity: 0.4;
 }
