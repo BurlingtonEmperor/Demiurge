@@ -38,6 +38,7 @@ enum class demiurge_commands_primary {
   STRING_ARR,
   LONG_ARR,
   BOOL_ARR,
+  SET_ARR, // sa <-- set array to push to
   PUSH, // p <-- push values to preset array
   KEY_PROMPT, // kp
   SET_KEY, // se
@@ -54,6 +55,8 @@ enum class demiurge_commands_primary {
   STOP, // !
   CLEAR, // _
   EXECUTE, 
+  IF,
+  ELSE,
   C, // <-- that's a comment indicator.
   PLAY_SOUND,
   RUN_FUNC,
@@ -97,6 +100,7 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
     {"STRING_ARR", demiurge_commands_primary::STRING_ARR},
     {"LONG_ARR", demiurge_commands_primary::LONG_ARR},
     {"BOOL_ARR", demiurge_commands_primary::BOOL_ARR},
+    {"SET_ARR", demiurge_commands_primary::SET_ARR},
     {"PUSH", demiurge_commands_primary::PUSH},
     {"KEY_PROMPT", demiurge_commands_primary::KEY_PROMPT},
     {"SET_KEY", demiurge_commands_primary::SET_KEY},
@@ -133,7 +137,7 @@ std::vector<std::string> variable_checking_array; // storing variables and check
 bool checkIfVariableExists (std::string variable_name) {
   for (int i = 0; i < variable_checking_array.size(); i++) {
     std::string var_data = variable_checking_array[i];
-    std::vector<std::string> var_data_vector = splitByString(var_data, ";");
+    std::vector<std::string> var_data_vector = splitByString(var_data, ":");
     std::string var_name = var_data_vector[2];
 
     if (variable_name == var_name) {
@@ -141,6 +145,27 @@ bool checkIfVariableExists (std::string variable_name) {
     }
   }
   return false;
+}
+
+int getVariablePosition (std::string variable_name) {
+  for (int i = 0; i < variable_checking_array.size(); i++) {
+    std::string var_data = variable_checking_array[i];
+    std::vector<std::string> var_data_vector = splitByString(var_data, ":");
+    std::string var_name = var_data_vector[2];
+
+    if (variable_name == var_name) {
+      return i;
+    }
+  }
+}
+
+void addArrayToArray (std::string array_name, std::string array_item) {
+  if (checkIfVariableExists(array_name)) {
+    std::string array_data = variable_checking_array[getVariablePosition(array_name)];
+    std::vector<std::string> array_vector = splitByString(array_data, ":");
+  } else {
+    
+  }
 }
 
 int main (int argc, char *argv[]) {
@@ -176,7 +201,7 @@ int main (int argc, char *argv[]) {
       */
       std::string compilerErrorMsg = "";
 
-      std::string target_array_name;
+      std::string target_array_name = "";
       int target_array_type = 0; // 0 = int arr, 1 = float arr, 2 = long arr, 3 = bool arr, 4 = string arr
 
       for (int i = 0; i < seglist.size(); i++) {
@@ -227,7 +252,7 @@ int main (int argc, char *argv[]) {
             if (checkIfVariableExists(secondary_argument)) {
               compilerError = 1;
               compilerErrorType = 3;
-              compilerErrorMsg = "Attempted to redeclare a pre-existing variable";
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
             } else {
               if (is_number(third_argument)) {
                 variable_checking_array.push_back("v:i:" + secondary_argument + ":" + third_argument);
@@ -244,7 +269,7 @@ int main (int argc, char *argv[]) {
             if (checkIfVariableExists(secondary_argument)) {
               compilerError = 1;
               compilerErrorType = 3;
-              compilerErrorMsg = "Attempted to redeclare a pre-existing variable";
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
             } else {
               if (is_number(third_argument)) {
                 variable_checking_array.push_back("v:f:" + secondary_argument + ":" + third_argument);
@@ -280,30 +305,121 @@ int main (int argc, char *argv[]) {
             only_taking_one_arg = 1;
             break;
           case (demiurge_commands_primary::STRING):
-            variable_checking_array.push_back("v:s:" + space_clone_final);
+            if (checkIfVariableExists(secondary_argument)) {
+              compilerError = 1;
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
+            } else {
+              variable_checking_array.push_back("v:s:" + space_clone_final);
+            }
             break;
           case (demiurge_commands_primary::INT_ARR):
+            if (checkIfVariableExists(secondary_argument)) {
+              compilerError = 1;
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
+            }
             target_array_name = secondary_argument;
             target_array_type = 0;
             break;
           case (demiurge_commands_primary::FLOAT_ARR):
+            if (checkIfVariableExists(secondary_argument)) {
+              compilerError = 1;
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
+            }
             target_array_name = secondary_argument;
             target_array_type = 1;
             break;
           case (demiurge_commands_primary::LONG_ARR):
+            if (checkIfVariableExists(secondary_argument)) {
+              compilerError = 1;
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
+            }
             target_array_name = secondary_argument;
             target_array_type = 2;
             break;
           case (demiurge_commands_primary::BOOL_ARR):
+            if (checkIfVariableExists(secondary_argument)) {
+              compilerError = 1;
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
+            }
             target_array_name = secondary_argument;
             target_array_type = 3;
             break;
           case (demiurge_commands_primary::STRING_ARR):
+            if (checkIfVariableExists(secondary_argument)) {
+              compilerError = 1;
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
+            }
             target_array_name = secondary_argument;
             target_array_type = 4;
             break;
-          case (demiurge_commands_primary::PUSH): {
-            
+          case (demiurge_commands_primary::SET_ARR):
+            if (checkIfVariableExists(secondary_argument)) {
+              target_array_name = secondary_argument;
+            } else {
+              compilerError = 1;
+              compilerErrorType = 1;
+              compilerErrorMsg = "Array \"" + secondary_argument + "\" not found";
+            }
+            break;
+          case (demiurge_commands_primary::PUSH): { // wip
+            only_taking_one_arg = 1;
+
+            if (target_array_name == "") {
+              compilerError = 1;
+              compilerErrorType = 3;
+              compilerErrorMsg = "Target array hasn't been set";
+            } else {
+              switch (target_array_type) {
+                case 0:
+                case 1:
+                case 2:
+                  if (is_number(secondary_argument)) {
+                      
+                  } else {
+                    compilerError = 1;
+                    compilerErrorType = 2;
+                    compilerErrorMsg = "Attempted to pass a non-number into a number array (int, float, bool)";
+                  }
+                  break;
+                case 3:
+                  if ((secondary_argument == "TRUE") || (secondary_argument == "FALSE")) {
+                      
+                  } else {
+                      
+                  }
+                  break;
+              }
+              // if (!checkIfVariableExists(target_array_name)) {
+              //   switch (target_array_type) {
+              //     case 0:
+              //     case 1:
+              //     case 2:
+              //       if (is_number(secondary_argument)) {
+                      
+              //       } else {
+              //         compilerError = 1;
+              //         compilerErrorType = 2;
+              //         compilerErrorMsg = "Attempted to pass a non-number into a number array (int, float, bool)";
+              //       }
+              //       break;
+              //     case 3:
+              //       if ((secondary_argument == "TRUE") || (secondary_argument == "FALSE")) {
+                      
+              //       } else {
+                      
+              //       }
+              //       break;
+              //   }
+              // } else {
+                
+              // }
+            }
             break; 
           }
           case (demiurge_commands_primary::SET_KEY):
