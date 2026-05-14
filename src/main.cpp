@@ -38,6 +38,7 @@ enum class demiurge_commands_primary {
   STRING_ARR,
   LONG_ARR,
   BOOL_ARR,
+  PUSH, // p <-- push values to preset array
   KEY_PROMPT, // kp
   SET_KEY, // se
   ENCRYPT, // e
@@ -96,6 +97,7 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
     {"STRING_ARR", demiurge_commands_primary::STRING_ARR},
     {"LONG_ARR", demiurge_commands_primary::LONG_ARR},
     {"BOOL_ARR", demiurge_commands_primary::BOOL_ARR},
+    {"PUSH", demiurge_commands_primary::PUSH},
     {"KEY_PROMPT", demiurge_commands_primary::KEY_PROMPT},
     {"SET_KEY", demiurge_commands_primary::SET_KEY},
     {"ENCRYPT", demiurge_commands_primary::ENCRYPT},
@@ -127,6 +129,20 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
   return (it != commandMap.end()) ? it->second : demiurge_commands_primary::UNDEFINED;
 }
 
+std::vector<std::string> variable_checking_array; // storing variables and check to see if a variable exists.
+bool checkIfVariableExists (std::string variable_name) {
+  for (int i = 0; i < variable_checking_array.size(); i++) {
+    std::string var_data = variable_checking_array[i];
+    std::vector<std::string> var_data_vector = splitByString(var_data, ";");
+    std::string var_name = var_data_vector[2];
+
+    if (variable_name == var_name) {
+      return true;
+    }
+  }
+  return false;
+}
+
 int main (int argc, char *argv[]) {
   if (argc != 2) {
     std::cout << "Demiurge can only accept 1 file path as an argument.";
@@ -156,10 +172,12 @@ int main (int argc, char *argv[]) {
       0 - syntax error
       1 - undefined error
       2 - type error
+      3 - reference error
       */
       std::string compilerErrorMsg = "";
 
-      std::vector<std::string> variable_checking_array; // storing variables and check to see if a variable exists.
+      std::string target_array_name;
+      int target_array_type = 0; // 0 = int arr, 1 = float arr, 2 = long arr, 3 = bool arr, 4 = string arr
 
       for (int i = 0; i < seglist.size(); i++) {
         if (compilerError == 1) {
@@ -206,34 +224,52 @@ int main (int argc, char *argv[]) {
             break;
           case (demiurge_commands_primary::INT): { // check if it's actually an int!
             only_taking_one_arg = 2;
-            if (is_number(third_argument)) {
-              variable_checking_array.push_back("v:i:" + third_argument);
-            } else {
+            if (checkIfVariableExists(secondary_argument)) {
               compilerError = 1;
-              compilerErrorType = 2;
-              compilerErrorMsg = "The value passed to the <int> variable is not a number";
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable";
+            } else {
+              if (is_number(third_argument)) {
+                variable_checking_array.push_back("v:i:" + secondary_argument + ":" + third_argument);
+              }  else {
+                compilerError = 1;
+                compilerErrorType = 2;
+                compilerErrorMsg = "The value passed to the <int> variable is not a number";
+              }
             }
             break;
           }
           case (demiurge_commands_primary::FLOAT): {
             only_taking_one_arg = 2;
-            if (is_number(third_argument)) {
-              variable_checking_array.push_back("v:f:" + third_argument);
-            } else {
+            if (checkIfVariableExists(secondary_argument)) {
               compilerError = 1;
-              compilerErrorType = 2;
-              compilerErrorMsg = "The value passed to the <float> variable is not a number";
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable";
+            } else {
+              if (is_number(third_argument)) {
+                variable_checking_array.push_back("v:f:" + secondary_argument + ":" + third_argument);
+              } else {
+                compilerError = 1;
+                compilerErrorType = 2;
+                compilerErrorMsg = "The value passed to the <float> variable is not a number";
+              } 
             }
             break;
           }
           case (demiurge_commands_primary::LONG): {
             only_taking_one_arg = 2;
-            if (is_number(third_argument)) {
-              variable_checking_array.push_back("v:l:" + third_argument);
-            } else {
+            if (checkIfVariableExists(secondary_argument)) {
               compilerError = 1;
-              compilerErrorType = 2;
-              compilerErrorMsg = "The value passed to the <long> variable is not a number";
+              compilerErrorType = 3;
+              compilerErrorMsg = "Attempted to redeclare a pre-existing variable";
+            } else {
+              if (is_number(third_argument)) {
+                variable_checking_array.push_back("v:l:" + secondary_argument + ":" + third_argument);
+              } else {
+                compilerError = 1;
+                compilerErrorType = 2;
+                compilerErrorMsg = "The value passed to the <long> variable is not a number";
+              } 
             }
             break;
           }
@@ -247,8 +283,29 @@ int main (int argc, char *argv[]) {
             variable_checking_array.push_back("v:s:" + space_clone_final);
             break;
           case (demiurge_commands_primary::INT_ARR):
-            
+            target_array_name = secondary_argument;
+            target_array_type = 0;
             break;
+          case (demiurge_commands_primary::FLOAT_ARR):
+            target_array_name = secondary_argument;
+            target_array_type = 1;
+            break;
+          case (demiurge_commands_primary::LONG_ARR):
+            target_array_name = secondary_argument;
+            target_array_type = 2;
+            break;
+          case (demiurge_commands_primary::BOOL_ARR):
+            target_array_name = secondary_argument;
+            target_array_type = 3;
+            break;
+          case (demiurge_commands_primary::STRING_ARR):
+            target_array_name = secondary_argument;
+            target_array_type = 4;
+            break;
+          case (demiurge_commands_primary::PUSH): {
+            
+            break; 
+          }
           case (demiurge_commands_primary::SET_KEY):
             bytecode_vector.push_back("se:" + secondary_argument);
             only_taking_one_arg = 1;

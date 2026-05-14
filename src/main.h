@@ -14,5 +14,8 @@
 #include "make_cpp_easier.h"
 
 extern std::string string_to_decipher;
+extern std::vector<std::string> variable_checking_array;
+
+bool checkIfVariableExists (std::string variable_name);
 
 #endif
