@@ -54,26 +54,28 @@ enum class demiurge_commands_primary {
   REPEAT, // r
   STOP, // !
   CLEAR, // _
-  EXECUTE, 
-  IF,
+  EXECUTE, // exe
+  IF, // if
   ELSE,
   C, // <-- that's a comment indicator.
-  PLAY_SOUND,
-  RUN_FUNC,
-  EDITOR_BG, // editor commands start here.
-  EDITOR_FONT,
-  EDITOR_TEXT_COLOR,
-  EDITOR_BGIMG,
-  EDITOR_GLASS,
-  BLOCK_GLASS,
-  BLOCK_COLOR,
-  BLOCK_FONT,
-  BLOCK_TEXT_COLOR,
-  EDITOR_CSS, // editor commands end here.
-  DRAW_IMG, // canvas commands start here.
-  CLEAR_CANVAS,
-  WRITE_TEXT,
-  HTML_SOUND, // canvas commands end here.
+  PLAY_SOUND, // ps <-- native sound lib, not browser sound
+  RUN_FUNC, // rf
+  EDITOR_BG, // ebg, editor commands start here.
+  EDITOR_FONT, // ef
+  EDITOR_TEXT_COLOR, // etc
+  EDITOR_BGIMG, // ebgi
+  EDITOR_GLASS, // eg
+  BLOCK_GLASS, // bg
+  BLOCK_COLOR, // bc
+  BLOCK_FONT, // bf
+  BLOCK_TEXT_COLOR, // btc (Block text color, NOT BITCOIN!!)
+  EDITOR_CSS, // ec, editor commands end here.
+  DRAW_IMG, // di, canvas commands start here.
+  CLEAR_CANVAS, // cc
+  TEXT_X, 
+  TEXT_Y, 
+  WRITE_TEXT, // wt
+  HTML_SOUND, // hs, canvas commands end here.
   UNDEFINED
 };
 
@@ -120,11 +122,19 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
     {"RUN_FUNC", demiurge_commands_primary::RUN_FUNC},
     {"PLAY_SOUND", demiurge_commands_primary::PLAY_SOUND},
     {"EDITOR_BG", demiurge_commands_primary::EDITOR_BG},
+    {"EDITOR_BGIMG", demiurge_commands_primary::EDITOR_BGIMG},
+    {"EDITOR_GLASS", demiurge_commands_primary::EDITOR_GLASS},
     {"EDITOR_FONT", demiurge_commands_primary::EDITOR_FONT},
     {"EDITOR_TEXT_COLOR", demiurge_commands_primary::EDITOR_TEXT_COLOR},
     {"EDITOR_CSS", demiurge_commands_primary::EDITOR_CSS},
+    {"BLOCK_GLASS", demiurge_commands_primary::BLOCK_GLASS},
+    {"BLOCK_COLOR", demiurge_commands_primary::BLOCK_COLOR},
+    {"BLOCK_FONT", demiurge_commands_primary::BLOCK_FONT},
+    {"BLOCK_TEXT_COLOR", demiurge_commands_primary::BLOCK_TEXT_COLOR},
     {"DRAW_IMG", demiurge_commands_primary::DRAW_IMG},
     {"CLEAR_CANVAS", demiurge_commands_primary::CLEAR_CANVAS},
+    {"TEXT_X", demiurge_commands_primary::TEXT_X},
+    {"TEXT_Y", demiurge_commands_primary::TEXT_Y},
     {"WRITE_TEXT", demiurge_commands_primary::WRITE_TEXT},
     {"HTML_SOUND", demiurge_commands_primary::HTML_SOUND},
   };
@@ -159,12 +169,17 @@ int getVariablePosition (std::string variable_name) {
   }
 }
 
-void addArrayToArray (std::string array_name, std::string array_item) {
+void addArrayToArray (std::string array_name, int array_type, std::string array_item) {
   if (checkIfVariableExists(array_name)) {
     std::string array_data = variable_checking_array[getVariablePosition(array_name)];
     std::vector<std::string> array_vector = splitByString(array_data, ":");
+
+    std::string array_final_data = array_vector[3];
+    // std::vector<std::string> array_final_vector = splitByString(array_data, ";");
+    array_final_data = array_final_data + ";" + array_item;
   } else {
-    
+    std::string array_type_to_string = std::to_string(array_type);
+    variable_checking_array.push_back("v:" + array_type_to_string + ":" + array_name + ":" + array_item);
   }
 }
 
@@ -204,6 +219,9 @@ int main (int argc, char *argv[]) {
       std::string target_array_name = "";
       int target_array_type = 0; // 0 = int arr, 1 = float arr, 2 = long arr, 3 = bool arr, 4 = string arr
 
+      int target_text_x = 0;
+      int target_text_y = 0;
+
       for (int i = 0; i < seglist.size(); i++) {
         if (compilerError == 1) {
           compilerErrorLine = i;
@@ -217,6 +235,7 @@ int main (int argc, char *argv[]) {
           return (a == ' ' && b == ' ');
         });
         individual_line.erase(it, individual_line.end()); // remove extra whitespace
+        replaceAll(individual_line, ":", "<colon>"); // remove reserved chars
         std::vector<std::string> space_limiter = splitBySpaces(individual_line);
 
         demiurge_commands_primary convertedCommand = commandToEnum(toUpperCase(space_limiter[0]));
@@ -380,7 +399,7 @@ int main (int argc, char *argv[]) {
                 case 1:
                 case 2:
                   if (is_number(secondary_argument)) {
-                      
+                    addArrayToArray(target_array_name, target_array_type, secondary_argument);
                   } else {
                     compilerError = 1;
                     compilerErrorType = 2;
@@ -389,9 +408,11 @@ int main (int argc, char *argv[]) {
                   break;
                 case 3:
                   if ((secondary_argument == "TRUE") || (secondary_argument == "FALSE")) {
-                      
+                    addArrayToArray(target_array_name, target_array_type, secondary_argument);
                   } else {
-                      
+                    compilerError = 1;
+                    compilerErrorType = 2;
+                    compilerErrorMsg = "Attempted to pass a non-boolean into a boolean array";
                   }
                   break;
               }
@@ -434,7 +455,7 @@ int main (int argc, char *argv[]) {
             bytecode_vector.push_back("d:" + space_clone_final);
             break;
           case (demiurge_commands_primary::TEXT_OCR):
-            bytecode_vector.push_back("se:" + space_clone_final);
+            bytecode_vector.push_back("to:" + space_clone_final);
             break;
           case (demiurge_commands_primary::SET_MODEL):
             bytecode_vector.push_back("sm:" + secondary_argument);
@@ -443,6 +464,9 @@ int main (int argc, char *argv[]) {
           case (demiurge_commands_primary::SET_API_KEY):
             bytecode_vector.push_back("sak:" + secondary_argument);
             only_taking_one_arg = 1;
+            break;
+          case (demiurge_commands_primary::KEY_PROMPT):
+            bytecode_vector.push_back("kp");
             break;
           case (demiurge_commands_primary::LLM):
             bytecode_vector.push_back("llm:" + space_clone_final);
@@ -459,6 +483,91 @@ int main (int argc, char *argv[]) {
             }
             break;
           }
+          case (demiurge_commands_primary::STOP): 
+            bytecode_vector.push_back("!");
+            break;
+          case (demiurge_commands_primary::CLEAR):
+            bytecode_vector.push_back("_");
+            break;
+          case (demiurge_commands_primary::RUN_FUNC):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("rf:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::PLAY_SOUND):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("ps:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::EDITOR_BG):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("ebg:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::EDITOR_FONT):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("ef:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::EDITOR_TEXT_COLOR):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("etc:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::EDITOR_BGIMG):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("ebgi:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::EDITOR_GLASS):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("eg:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::BLOCK_GLASS):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("bg:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::BLOCK_COLOR):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("bc:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::BLOCK_FONT):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("bf:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::BLOCK_TEXT_COLOR):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("btc:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::EDITOR_CSS):
+            bytecode_vector.push_back("ec:" + space_clone_final);
+            break;
+          case (demiurge_commands_primary::DRAW_IMG):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("di:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::CLEAR_CANVAS):
+            bytecode_vector.push_back("cc");
+            break;
+          case (demiurge_commands_primary::TEXT_X): {
+            only_taking_one_arg = 1;
+            target_text_x = std::stoi(secondary_argument);
+            break;
+          }
+          case (demiurge_commands_primary::TEXT_Y): {
+            only_taking_one_arg = 1;
+            target_text_y = std::stoi(secondary_argument);
+          }
+          case (demiurge_commands_primary::WRITE_TEXT): {
+            std::string text_x = std::to_string(target_text_x);
+            std::string text_y = std::to_string(target_text_y);
+            bytecode_vector.push_back("wt:" + text_x + ":" + text_y + ":" + space_clone_final);
+            break;
+          }
+          case (demiurge_commands_primary::HTML_SOUND): {
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("hs:" + secondary_argument);
+            break;
+          }
+          case (demiurge_commands_primary::UNDEFINED):
+            compilerError = 1;
+            compilerErrorType = 1;
+            compilerErrorMsg = "Primary command is undefined";
+            break;
         }
 
         switch (only_taking_one_arg) {
