@@ -213,6 +213,7 @@ int main (int argc, char *argv[]) {
       1 - undefined error
       2 - type error
       3 - reference error
+      4 - arg error
       */
       std::string compilerErrorMsg = "";
 
@@ -224,7 +225,32 @@ int main (int argc, char *argv[]) {
 
       for (int i = 0; i < seglist.size(); i++) {
         if (compilerError == 1) {
+          std::string error_type_msg = "";
+          switch (compilerErrorType) {
+            case 0:
+              error_type_msg = "Syntax Error:";
+              break;
+            case 1:
+              error_type_msg = "Undefined Error:";
+              break;
+            case 2:
+              error_type_msg = "Type Error:";
+              break;
+            case 3:
+              error_type_msg = "Reference Error:";
+              break;
+            case 4:
+              error_type_msg = "Argument Error:";
+              break;
+          }
+
           compilerErrorLine = i;
+          std::cout << "Error on line ";
+          std::cout << compilerErrorLine;
+          std::cout << ": \"" + seglist[i] + "\"\n";
+          std::cout << error_type_msg + " ";   
+          std::cout << compilerErrorMsg + "\n";
+          std::cin.get();     
           break;
         }
 
@@ -572,8 +598,14 @@ int main (int argc, char *argv[]) {
 
         switch (only_taking_one_arg) {
           case 1:
+            compilerError = 1;
+            compilerErrorType = 4;
+            compilerErrorMsg = "This command only takes 1 argument";
             break;
           case 2:
+            compilerError = 1;
+            compilerErrorType = 4;
+            compilerErrorMsg = "This command only takes 2 arguments";
             break;
         }
       }
