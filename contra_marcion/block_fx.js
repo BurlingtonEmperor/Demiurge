@@ -55,7 +55,9 @@ function makeElementDraggable(element, initialEvent) {
         e.pageY >= ghostRect.top &&
         e.pageY <= ghostRect.bottom
       ) {
-        ghostBlock.classList.add("glow");
+        if (!element.classList.contains("o-block")) {
+          ghostBlock.classList.add("glow");
+        }
       } else {
         ghostBlock.classList.remove("glow");
       }
@@ -89,7 +91,8 @@ function makeElementDraggable(element, initialEvent) {
         e.pageX >= ghostRect.left &&
         e.pageX <= ghostRect.right &&
         e.pageY >= ghostRect.top &&
-        e.pageY <= ghostRect.bottom
+        e.pageY <= ghostRect.bottom &&
+        !element.classList.contains("o-block")
       ) {
         element.style.position = "relative";
         element.style.left = "";

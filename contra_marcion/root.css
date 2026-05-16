@@ -1,0 +1,34 @@
+:root {
+  --bg-main: #0a0b0d;
+  --bg-surface: #12141c;
+  --bg-sidebar: #161923;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --accent-primary: #4f46e5;     
+  --accent-glow: rgba(79, 70, 229, 0.4);
+  --accent-success: #10b981;    
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#main-editor-view {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-main);
+  position: relative;
+  overflow: hidden;
+}
+
+.block-template {
+  border: 1px solid var(--border-color);
+
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.3), 
+    0 10px 20px -5px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.02); 
+    
+  transition: var(--transition-smooth);
+}

@@ -56,7 +56,8 @@ enum class demiurge_commands_primary {
   CLEAR, // _
   EXECUTE, // exe
   IF, // if
-  ELSE,
+  ELSE, // el
+  SET_COND, // sc, set condition
   C, // <-- that's a comment indicator.
   PLAY_SOUND, // ps <-- native sound lib, not browser sound
   RUN_FUNC, // rf
@@ -137,6 +138,8 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
     {"TEXT_Y", demiurge_commands_primary::TEXT_Y},
     {"WRITE_TEXT", demiurge_commands_primary::WRITE_TEXT},
     {"HTML_SOUND", demiurge_commands_primary::HTML_SOUND},
+    {"IF", demiurge_commands_primary::IF},
+    {"ELSE", demiurge_commands_primary::ELSE}
   };
 
   auto it = commandMap.find(str);
