@@ -1,3 +1,7 @@
+/*
+Houses all basic interactions
+*/
+
 const toggleBtn = document.getElementById('block-menu-toggle');
 const slidingWindow = document.getElementById('sliding-window');
 

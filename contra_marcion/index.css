@@ -43,6 +43,8 @@ option {
   border-radius: 10px;
   user-select: none;
   width: fit-content;
+  cursor: grab;
+  z-index: 1002;
 }
 
 .block-if {
@@ -208,6 +210,6 @@ option {
   position: absolute;
 }
 
-#ghost-block {
+/* #ghost-block {
   opacity: 0.4;
-}
+} */

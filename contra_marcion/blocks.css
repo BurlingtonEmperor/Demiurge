@@ -18,3 +18,20 @@
 .m-block {
   background-color: #ebb661;
 }
+
+.cloned-element {
+  position: absolute;
+}
+
+#ghost-block {
+  opacity: 0.4;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+#ghost-block.glow {
+  transform: scale(1.015);
+  border-color: rgba(0, 255, 213, 0.75) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 213, 0.6), 
+              0 8px 32px 0 rgba(31, 38, 135, 0.2) !important;
+  background: rgba(0, 255, 213, 0.15) !important;
+}
