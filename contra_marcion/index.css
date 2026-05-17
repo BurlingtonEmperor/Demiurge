@@ -204,7 +204,10 @@ option {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-gutter: stable;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    6px 0 18px rgba(0, 0, 0, 0.4), 
+    12px 0 32px rgba(0, 0, 0, 0.3),
+    1px 0 0 0 rgba(255, 255, 255, 0.02) inset;
 }
 
 #sliding-window::-webkit-scrollbar {

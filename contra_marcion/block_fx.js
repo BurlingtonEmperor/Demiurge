@@ -77,7 +77,7 @@ function makeElementDraggable(element, initialEvent) {
       e.pageY <= sidebarRect.bottom
     ) {
       element.remove();
-      playOverlap("../contra_marcion/audio/rubbish.wav");
+      playOverlap("trash");
       if (ghostBlock) {
         ghostBlock.classList.remove("glow");
       }
@@ -104,7 +104,7 @@ function makeElementDraggable(element, initialEvent) {
         
         if (targetBlocksContainer) {
           targetBlocksContainer.insertBefore(element, ghostBlock);
-          playOverlap("../contra_marcion/audio/click_001.ogg");
+          playOverlap("drop");
         }
       }
       ghostBlock.classList.remove("glow");
@@ -153,8 +153,3 @@ items.forEach(item => {
     makeElementDraggable(item, e);
   });
 });
-
-function playOverlap(src) {
-  const sound = new Audio(src);
-  sound.play();
-}

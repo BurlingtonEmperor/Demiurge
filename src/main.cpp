@@ -139,7 +139,8 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
     {"WRITE_TEXT", demiurge_commands_primary::WRITE_TEXT},
     {"HTML_SOUND", demiurge_commands_primary::HTML_SOUND},
     {"IF", demiurge_commands_primary::IF},
-    {"ELSE", demiurge_commands_primary::ELSE}
+    {"ELSE", demiurge_commands_primary::ELSE},
+    {"SET_COND", demiurge_commands_primary::SET_COND}
   };
 
   auto it = commandMap.find(str);
@@ -592,6 +593,10 @@ int main (int argc, char *argv[]) {
             bytecode_vector.push_back("hs:" + secondary_argument);
             break;
           }
+          case (demiurge_commands_primary::EXECUTE):
+            only_taking_one_arg = 1;
+            bytecode_vector.push_back("exe:" + secondary_argument);
+            break;
           case (demiurge_commands_primary::UNDEFINED):
             compilerError = 1;
             compilerErrorType = 1;
