@@ -200,7 +200,7 @@ void deleteVariable (std::string variable_name) {
   }
 }
 
-using VariableValue = std::variant<int, double, std::string, bool>; 
+using VariableValue = std::variant<int, double, std::string, bool>; // won;t use this for now because im too lazy
 struct VariableSymbol {
     std::string dataType; // "integer", "float", "string", "boolean"
     VariableValue value;  // val
@@ -676,6 +676,12 @@ int main (int argc, char *argv[]) {
             break;
         }
       }
+      
+      std::ofstream binaryFile("bytecode.txt");
+      for (int i = 0; i < bytecode_vector.size(); i++) {
+        binaryFile << bytecode_vector[i] << std::endl;
+      }
+      binaryFile.close();
     } else {
       std::cout << "Unable to open file. It may not exist." << std::endl;
       std::cin.get();
