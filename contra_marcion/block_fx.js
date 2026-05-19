@@ -3,6 +3,10 @@ const ghostBlock = document.getElementById("ghost-block");
 let highestZIndex = 1010;
 
 function makeElementDraggable(element, initialEvent) {
+  if (initialEvent.target.tagName === 'SELECT' || initialEvent.target.closest('select') || initialEvent.target.tagName === 'INPUT' || initialEvent.target.closest('input')) {
+    return;
+  }
+
   highestZIndex++;
   element.style.zIndex = highestZIndex;
 
@@ -119,6 +123,10 @@ const templates = document.querySelectorAll(".block-template");
 
 templates.forEach(template => {
   template.addEventListener("mousedown", (e) => {
+    if (e.target.tagName === 'SELECT' || e.target.closest('select') || e.target.tagName === 'INPUT' || e.target.closest('input')) {
+      return; 
+    }
+
     e.preventDefault();
 
     const clone = template.cloneNode(true);
@@ -133,10 +141,17 @@ templates.forEach(template => {
     
     clone.style.left = `${templateRect.left - containerRect.left}px`;
     clone.style.top = `${templateRect.top - containerRect.top}px`;
+    
+    clone.innerHTML += revealFullBlock(String(clone.id));
+    clone.removeAttribute("id");
 
     container.appendChild(clone);
 
     clone.addEventListener('mousedown', (cloneEvent) => {
+      if (cloneEvent.target.tagName === 'SELECT' || cloneEvent.target.closest('select') || cloneEvent.target.tagName === 'INPUT' || cloneEvent.target.closest('input')) {
+        return; 
+      }
+
       cloneEvent.stopPropagation(); 
       cloneEvent.preventDefault();
       makeElementDraggable(clone, cloneEvent); 
@@ -149,6 +164,10 @@ templates.forEach(template => {
 const items = document.querySelectorAll('.draggable-item');
 items.forEach(item => {
   item.addEventListener('mousedown', (e) => {
+    if (e.target.tagName === 'SELECT' || e.target.closest('select') || e.target.tagName === 'INPUT' || e.target.closest('input')) {
+      return; 
+    }
+
     e.preventDefault();
     makeElementDraggable(item, e);
   });

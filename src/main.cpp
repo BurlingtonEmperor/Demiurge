@@ -7,6 +7,7 @@
 #include <ranges>
 #include <unordered_map>
 #include <numeric>
+#include <variant>
 
 #include "make_cpp_easier.h"
 #include "demiurge_math.h"
@@ -56,7 +57,9 @@ enum class demiurge_commands_primary {
   CLEAR, // _
   EXECUTE, // exe
   IF, // if
+  END_IF, //eif
   ELSE, // el
+  END_ELSE, // eel ------o
   SET_COND, // sc, set condition
   C, // <-- that's a comment indicator.
   PLAY_SOUND, // ps <-- native sound lib, not browser sound
@@ -115,7 +118,7 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
     {"LLM", demiurge_commands_primary::LLM},
     {"ILC", demiurge_commands_primary::ILC},
     {"APM", demiurge_commands_primary::APM},
-    {"WAIT", demiurge_commands_primary::REPEAT},
+    {"WAIT", demiurge_commands_primary::WAIT},
     {"STOP", demiurge_commands_primary::STOP},
     {"CLEAR", demiurge_commands_primary::CLEAR},
     {"EXECUTE", demiurge_commands_primary::EXECUTE},
@@ -138,8 +141,11 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
     {"TEXT_Y", demiurge_commands_primary::TEXT_Y},
     {"WRITE_TEXT", demiurge_commands_primary::WRITE_TEXT},
     {"HTML_SOUND", demiurge_commands_primary::HTML_SOUND},
+    {"SET_COND", demiurge_commands_primary::SET_COND},
     {"IF", demiurge_commands_primary::IF},
+    {"END_IF", demiurge_commands_primary::END_IF},
     {"ELSE", demiurge_commands_primary::ELSE},
+    {"END_ELSE", demiurge_commands_primary::END_ELSE},
     {"SET_COND", demiurge_commands_primary::SET_COND}
   };
 
@@ -227,6 +233,8 @@ int main (int argc, char *argv[]) {
       int target_text_x = 0;
       int target_text_y = 0;
 
+      int current_condition = 0; // 1 is true, 2 is false;
+
       for (int i = 0; i < seglist.size(); i++) {
         if (compilerError == 1) {
           std::string error_type_msg = "";
@@ -277,6 +285,7 @@ int main (int argc, char *argv[]) {
 
         std::string secondary_argument = (space_limiter.size() > 1) ? space_limiter[1] : "0";
         std::string third_argument = (space_limiter.size() > 2) ? space_limiter[2] : "0";
+        std::string fourth_argument = (space_limiter.size() > 3) ? space_limiter[3] : "0";
 
         int only_taking_one_arg = 0; // checks to see if the command only takes one argument, default (0) means no
 
@@ -596,6 +605,34 @@ int main (int argc, char *argv[]) {
           case (demiurge_commands_primary::EXECUTE):
             only_taking_one_arg = 1;
             bytecode_vector.push_back("exe:" + secondary_argument);
+            break;
+          case (demiurge_commands_primary::SET_COND): {
+            int third_argument_substitute = 0; // default undefined
+
+            if (third_argument == "EQUALS") third_argument_substitute = 1; 
+            if (third_argument == "IS_TRUE") third_argument_substitute = 2;
+            if (third_argument == "IS_FALSE") third_argument_substitute = 3;
+            if (third_argument == "MORE_THAN") third_argument_substitute = 4;
+            if (third_argument == "LESS_THAN") third_argument_substitute = 5;
+
+            switch (third_argument_substitute) {
+              case 0:
+                compilerError = 1;
+                compilerErrorType = 1;
+                compilerErrorMsg = "Operator \"" + third_argument + "\" is undefined";
+                break;
+              case 1:
+                if (is_number(secondary_argument) && (is_number(fourth_argument) == false)) current_condition = 2;
+                if (std::stoi(secondary_argument) == std::stoi(fourth_argument)) current_condition = 1;
+                if (secondary_argument == fourth_argument) current_condition = 1;
+                if (secondary_argument != fourth_argument) current_condition = 2;
+                break;
+              case 2:
+                break;
+            }
+            break;
+          }
+          case (demiurge_commands_primary::END_IF):
             break;
           case (demiurge_commands_primary::UNDEFINED):
             compilerError = 1;

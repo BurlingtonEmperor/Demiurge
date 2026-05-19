@@ -3,11 +3,21 @@
   <head>
     <title>Demiurge</title>
 
+    <link href="loading.css" rel="stylesheet" type="text/css"/>
+
     <link href="index.css" rel="stylesheet" type="text/css"/>
     <link href="blocks.css" rel="stylesheet" type="text/css"/>
     <link href="root.css" rel="stylesheet" type="text/css"/>
+
+    <link href="terminal.css" rel="stylesheet" type="text/css"/>
   </head>
   <body>
+    <div id="app-loading-screen">
+      <div class="spinner-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading Workspace Assets...</p>
+      </div>
+    </div>
     <div id="main-editor-view">
       <div id="bg-img"></div>
       <div id="bg-solid"></div>
@@ -27,6 +37,7 @@
         <hr/>
         <p class="menu-header" id="ai-section">AI Models</p>
         <div class="block glass ai-block menu-block block-template">ask user for API key</div>
+        <div class="block glass ai-block menu-block block-template">switch models</div>
         <div class="block glass ai-block menu-block block-template">send message to an LLM</div>
         <div class="block glass ai-block menu-block block-template">generate an image</div>
         <div class="block glass ai-block menu-block block-template">generate a video</div>
@@ -36,11 +47,12 @@
         <div class="block glass ai-block menu-block block-template">text to speech</div>
         <div class="block glass ai-block menu-block block-template">listen for words</div>
         <p class="menu-header" id="b-section">Basic</p>
-        <div class="block glass menu-block block-template">display to screen</div>
-        <div class="block glass menu-block block-template">ask user a question</div>
-        <div class="block glass menu-block block-template">play a sound</div>
-        <div class="block glass menu-block block-template">clear screen</div>
-        <div class="block glass menu-block block-template">leave a comment</div>
+        <div class="block glass basic-block menu-block block-template">display to screen</div>
+        <div class="block glass basic-block menu-block block-template">ask user a question</div>
+        <div class="block glass basic-block menu-block block-template">play a sound</div>
+        <div class="block glass basic-block menu-block block-template">clear screen</div>
+        <div class="block glass basic-block menu-block block-template">leave a comment</div>
+        <div class="block glass basic-block menu-block block-template">wait</div>
         <p class="menu-header" id="ml-section">Machine Learning</p>
         <div class="block glass ml-block menu-block block-template">find a pattern</div>
         <div class="block glass ml-block menu-block block-template">make a neural network</div>
@@ -86,7 +98,7 @@
         </div>
         <div class="block glass">
           Program settings:
-          <select>
+          <select id="flagx">
             <option value="default">Default</option>
             <option value="exe">Create an EXE file</option>
             <option value="html">Create an HTML file</option>
@@ -97,14 +109,41 @@
         <div id="ghost-block" class="block glass">Place your next block here...</div>
       </div>
       <div id="two-extra">
+        <div id="run-me" class="glass">Run</div>
         <div id="terminal-toggle" class="glass">>_</div>
         <div id="help-button" class="glass">?</div>
       </div>
-      <div class="window" id="terminal"></div>
+      <div class="window" id="terminal">
+        <div class="terminal-navbar">
+          <div class="terminal-title">
+            <span class="terminal-icon">>_</span>
+            <span>System Terminal</span>
+          </div>
+          <div class="terminal-controls">
+            <button id="close-terminal" title="Close Window">✕</button>
+          </div>
+       </div>
+  
+       <div class="terminal-body">
+         <div class="output-line">[System]: Environment initialized successfully...</div>
+         <div class="output-line">Running...</div>
+         <div id="terminal-output">
+           
+         </div>
+        </div>
+      </div>
     </div>
+
+    <script src="loading.js"></script>
 
     <script src="index.js"></script>
     <script src="sound.js"></script>
+
     <script src="block_fx.js"></script>
+    <script src="block_id.js"></script>
+
+    <script src="windows.js"></script>
+
+    <script src="web_functions/run.js"></script>
   </body>
 </html>

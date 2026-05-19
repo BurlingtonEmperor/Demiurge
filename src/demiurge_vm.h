@@ -9,6 +9,8 @@
 #include <chrono>
 #include <ranges>
 #include <numeric>
+#include <variant>
+#include <unordered_map>
 
 #include "make_cpp_easier.h"
 
