@@ -153,7 +153,7 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
   return (it != commandMap.end()) ? it->second : demiurge_commands_primary::UNDEFINED;
 }
 
-std::vector<std::string> variable_checking_array; // storing variables and check to see if a variable exists.
+std::vector<std::string> variable_checking_array; // storing variables and check to see if a variable exists. [OLD, DO NOT USE!]
 bool checkIfVariableExists (std::string variable_name) {
   for (int i = 0; i < variable_checking_array.size(); i++) {
     std::string var_data = variable_checking_array[i];
@@ -191,6 +191,25 @@ void addArrayToArray (std::string array_name, int array_type, std::string array_
     std::string array_type_to_string = std::to_string(array_type);
     variable_checking_array.push_back("v:" + array_type_to_string + ":" + array_name + ":" + array_item);
   }
+}
+
+void deleteVariable (std::string variable_name) {
+  if (checkIfVariableExists(variable_name)) {
+    int var_pos = getVariablePosition(variable_name);
+    variable_checking_array.erase(variable_checking_array.begin() + var_pos);
+  }
+}
+
+using VariableValue = std::variant<int, double, std::string, bool>; 
+struct VariableSymbol {
+    std::string dataType; // "integer", "float", "string", "boolean"
+    VariableValue value;  // val
+    bool isConstant;      // const or let, essentially
+};
+std::unordered_map<std::string, VariableSymbol> symbolTable; // declare new variable storage
+
+bool hasVariable(const std::string& name) {
+  return symbolTable.count(name) > 0;
 }
 
 int main (int argc, char *argv[]) {
@@ -283,6 +302,9 @@ int main (int argc, char *argv[]) {
         
         std::string space_clone_final = joinVectorItems_string(space_clone);
 
+        space_clone.erase(space_clone.begin());
+        std::string space_clone_secondary = joinVectorItems_string(space_clone);
+
         std::string secondary_argument = (space_limiter.size() > 1) ? space_limiter[1] : "0";
         std::string third_argument = (space_limiter.size() > 2) ? space_limiter[2] : "0";
         std::string fourth_argument = (space_limiter.size() > 3) ? space_limiter[3] : "0";
@@ -368,7 +390,7 @@ int main (int argc, char *argv[]) {
               compilerErrorType = 3;
               compilerErrorMsg = "Attempted to redeclare a pre-existing variable: " + secondary_argument;
             } else {
-              variable_checking_array.push_back("v:s:" + space_clone_final);
+              variable_checking_array.push_back("v:s:" + space_clone_secondary);
             }
             break;
           case (demiurge_commands_primary::INT_ARR):
