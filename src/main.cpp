@@ -41,6 +41,7 @@ enum class demiurge_commands_primary {
   BOOL_ARR,
   SET_ARR, // sa <-- set array to push to
   PUSH, // p <-- push values to preset array
+  POP, // p! <-- delete last value of array
   KEY_PROMPT, // kp
   SET_KEY, // se
   ENCRYPT, // e
@@ -108,6 +109,7 @@ demiurge_commands_primary commandToEnum (const std::string& str) {
     {"BOOL_ARR", demiurge_commands_primary::BOOL_ARR},
     {"SET_ARR", demiurge_commands_primary::SET_ARR},
     {"PUSH", demiurge_commands_primary::PUSH},
+    {"POP", demiurge_commands_primary::POP},
     {"KEY_PROMPT", demiurge_commands_primary::KEY_PROMPT},
     {"SET_KEY", demiurge_commands_primary::SET_KEY},
     {"ENCRYPT", demiurge_commands_primary::ENCRYPT},
@@ -166,8 +168,8 @@ bool checkIfVariableExists (std::string variable_name) {
   }
   return false;
 }
-
-int getVariablePosition (std::string variable_name) {
+ 
+int getVariablePosition (std::string variable_name) { // do not use if the variable doesn't exist!
   for (int i = 0; i < variable_checking_array.size(); i++) {
     std::string var_data = variable_checking_array[i];
     std::vector<std::string> var_data_vector = splitByString(var_data, ":");
@@ -177,19 +179,35 @@ int getVariablePosition (std::string variable_name) {
       return i;
     }
   }
+  return 0;
 }
 
 void addArrayToArray (std::string array_name, int array_type, std::string array_item) {
   if (checkIfVariableExists(array_name)) {
-    std::string array_data = variable_checking_array[getVariablePosition(array_name)];
+    int array_pos = getVariablePosition(array_name);
+    std::string array_data = variable_checking_array[array_pos];
     std::vector<std::string> array_vector = splitByString(array_data, ":");
 
     std::string array_final_data = array_vector[3];
     // std::vector<std::string> array_final_vector = splitByString(array_data, ";");
     array_final_data = array_final_data + ";" + array_item;
+    array_vector[3] = array_final_data;
+
+    std::string new_array = joinVectorItems_string_substring(array_vector, ":");
+    variable_checking_array[array_pos] = new_array;
   } else {
     std::string array_type_to_string = std::to_string(array_type);
     variable_checking_array.push_back("v:" + array_type_to_string + ":" + array_name + ":" + array_item);
+  }
+}
+
+void popArray (std::string array_name, int array_type) {
+  if (checkIfVariableExists(array_name)) {
+    std::string array_data = variable_checking_array[getVariablePosition(array_name)];
+    std::vector<std::string> array_vector = splitByString(array_data, ":");
+
+    std::string array_final_data = array_vector[3];
+    std::vector<std::string> arr_final = splitByString(array_final_data, ";");
   }
 }
 
@@ -278,7 +296,7 @@ int main (int argc, char *argv[]) {
           compilerErrorLine = i;
           std::cout << "Error on line ";
           std::cout << compilerErrorLine;
-          std::cout << ": \"" + seglist[i] + "\"\n";
+          std::cout << ": \"" + seglist[i - 1] + "\"\n";
           std::cout << error_type_msg + " ";   
           std::cout << compilerErrorMsg + "\n";
           std::cin.get();     
@@ -504,6 +522,15 @@ int main (int argc, char *argv[]) {
             }
             break; 
           }
+          case (demiurge_commands_primary::POP):
+            if (target_array_name == "") {
+              compilerError = 1;
+              compilerErrorType = 3;
+              compilerErrorMsg = "Target array hasn't been set";
+            } else {
+              
+            }
+            break;
           case (demiurge_commands_primary::SET_KEY):
             bytecode_vector.push_back("se:" + secondary_argument);
             only_taking_one_arg = 1;

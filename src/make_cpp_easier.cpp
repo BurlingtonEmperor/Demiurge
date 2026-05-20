@@ -64,13 +64,13 @@ int findLowestInArray(float (&array_to_check)[20]) { // finds lowest value in a 
   return lowest_position;
 }
 
-float absoluteValue(float value_to_check) {
-  if (value_to_check < 0.0f) {
-    return (value_to_check * (-1.0f));
-  } else {
-    return value_to_check;
-  }
-}
+// float absoluteValue(float value_to_check) {
+//   if (value_to_check < 0.0f) {
+//     return (value_to_check * (-1.0f));
+//   } else {
+//     return value_to_check;
+//   }
+// }
 
 std::vector<std::string> splitByString(const std::string& str, const std::string& delimiter) { // this function splits a string using a delimiter and returns a vector
   std::vector<std::string> tokens;

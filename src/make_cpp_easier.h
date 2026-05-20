@@ -20,8 +20,6 @@ bool is_number(const std::string& s);
 // int convertBoolToInt(bool& bool_value);
 int findLowestInArray(float (&array_to_check)[20]);
 
-float absoluteValue(float value_to_check);
-
 std::vector<std::string> splitByString(const std::string& str, const std::string& delimiter);
 std::vector<std::string> splitBySpaces(const std::string& str);
 
